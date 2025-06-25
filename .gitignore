@@ -1,0 +1,23 @@
+# Pastas de ambiente virtual (venv, myvenv)
+myvenv/
+venv/
+.env/
+
+# Pastas geradas pelo Python/PyInstaller
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+
+# Arquivos de configuração local
+.DS_Store          (Mac)
+Thumbs.db          (Windows)
+
+# Arquivos de IDE/Editor
+.idea/
+.vscode/
+
+# Logs e arquivos temporários
+*.log
+*.tmp

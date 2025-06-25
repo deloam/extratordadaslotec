@@ -1,0 +1,34 @@
+name: Build Windows EXE
+on: [push]  # Executa quando você faz um push
+
+jobs:
+  build:
+    runs-on: windows-latest  # Usa um Windows virtualizado no GitHub
+
+    steps:
+      # Passo 1: Baixa o código do repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Passo 2: Configura o Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"  # Recomendo Python 3.9 ou 3.10 (evite 3.13)
+
+      # Passo 3: Instala dependências
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # Passo 4: Compila o .exe com PyInstaller
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --windowed --icon=icon.ico main.py
+
+      # Passo 5: Faz upload do .exe como artefato
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Executable
+          path: dist/main.exe
