@@ -24,7 +24,7 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller --onefile --windowed --icon=icon.icns main.py
+          pyinstaller --onefile --windowed --icon=icon.ico main.py
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
