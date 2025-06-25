@@ -6,6 +6,11 @@ from tkinter import filedialog, messagebox, ttk  # Importando ttk para a barra d
 import os  # Importando os para abrir a pasta
 from datetime import datetime
 import platform
+import sys
+
+# Configuração especial para PyInstaller
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
 
 # Função para verificar a conexão com a internet
 def verificar_conexao():
@@ -16,7 +21,6 @@ def verificar_conexao():
         return False
 
 # URL base do site
-#https://www.stlucialotto.com/snl/statistics.php?s_GameID=5&s_Month=10&s_Year=2024
 base_url = "https://www.stlucialotto.com/snl/statistics.php?s_GameID=3&s_Month=10&s_Year=2005"
 
 # Inicializando listas para os dados
@@ -131,23 +135,33 @@ def extrair_dados():
     df['Data do sorteio'] = pd.to_datetime(df['Data do sorteio'], format='%d-%b-%Y')  # Ajuste o formato conforme necessário
     df = df.sort_values(by='Data do sorteio', ascending=False)  # Ordenar da mais recente para a mais antiga
 
-    # Selecionar o diretório para salvar o arquivo
-    save_path = filedialog.asksaveasfilename(defaultextension=".xlsx", initialfile="dados.xlsx", filetypes=[("Excel files", "*.xlsx")])
+   # Selecionar o diretório para salvar o arquivo
+    save_path = filedialog.asksaveasfilename(
+        defaultextension=".xlsx",
+        initialfile="dados_loteria.xlsx",
+        filetypes=[("Excel files", "*.xlsx")],
+        initialdir=os.path.expanduser("~\\Documents")
+    )
+
     if save_path:
-        df.to_excel(save_path, index=False)
-        messagebox.showinfo("Sucesso", "Arquivo Excel gerado com sucesso!")
-
-        # Abrir a pasta onde o arquivo foi salvo
-        pasta = os.path.dirname(save_path)
-        
-        # Verificar o sistema operacional e abrir a pasta corretamente
-        if platform.system() == "Windows":
-            os.startfile(pasta)  # Para Windows
-        elif platform.system() == "Darwin":  # macOS
-            os.system(f'open "{pasta}"')
-        else:
-            messagebox.showwarning("Aviso", "Sistema operacional não suportado para abrir a pasta.")
-
+        try:
+            # Garante que o diretório existe
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            
+            # Salva o arquivo Excel
+            df.to_excel(save_path, index=False, engine='openpyxl')
+            
+            # Mostra mensagem de sucesso com o caminho completo
+            messagebox.showinfo("Sucesso", f"Arquivo salvo com sucesso em:\n{save_path}")
+            
+            # Abre a pasta no explorador de arquivos
+            if platform.system() == "Windows":
+                os.startfile(os.path.dirname(save_path))
+            elif platform.system() == "Darwin":
+                os.system(f'open "{os.path.dirname(save_path)}"')
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Falha ao salvar o arquivo:\n{str(e)}") 
 # Criar a interface gráfica
 root = tk.Tk()
 root.title("Extrair Dados - Programa de Coleta de Resultados da Loteria")  # Título do programa
