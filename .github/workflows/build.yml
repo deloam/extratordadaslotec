@@ -2,10 +2,10 @@ name: Build Windows EXE
 on: [push]
 
 jobs:
-  build:  # <<< 2 espaços aqui
+  build:
     runs-on: windows-latest
     steps:
-      - name: Checkout code  # <<< 6 espaços (2 níveis)
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -18,9 +18,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install Tkinter (Windows)  # Passo novo!
+        run: |
+          choco install -y python --version 3.10
+          refreshenv
+
       - name: Build EXE
         run: |
-          pyinstaller --onefile --windowed --icon=icon.icns main.py  # <<< Corrigido "--icon-icon.ico"
+          pyinstaller --onefile --windowed --icon=icon.icns main.py
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
